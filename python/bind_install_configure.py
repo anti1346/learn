@@ -10,6 +10,19 @@ def get_linux_distribution():
     os_info = distro.id()
     return os_info
 
+def download_file(url, destination):
+    # 파일 다운로드 요청
+    response = requests.get(url)
+    
+    # 응답 확인
+    if response.status_code == 200:
+        # 파일 저장
+        with open(destination, 'wb') as f:
+            f.write(response.content)
+        print(f"다운로드 완료: {destination}")
+    else:
+        print(f"파일 다운로드 실패: {response.status_code}")
+
 # 운영 체제 판단 및 업데이트
 distro = get_linux_distribution()
 
@@ -130,19 +143,6 @@ subprocess.run(['chown', 'named.named', '-R', '/var/named'])
 # 라이브러리 경로를 ld.so.conf 파일에 추가
 with open('/etc/ld.so.conf', "a") as file:
     file.write('/usr/local/named/lib' + "\n")
-
-def download_file(url, destination):
-    # 파일 다운로드 요청
-    response = requests.get(url)
-    
-    # 응답 확인
-    if response.status_code == 200:
-        # 파일 저장
-        with open(destination, 'wb') as f:
-            f.write(response.content)
-        print(f"다운로드 완료: {destination}")
-    else:
-        print(f"파일 다운로드 실패: {response.status_code}")
 
 # 다운로드할 파일과 저장할 경로 정의
 files = {
