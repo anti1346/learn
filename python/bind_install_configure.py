@@ -28,7 +28,7 @@ if update_result.returncode != 0:
 
 # 필수 패키지 설치
 #required_packages = ['build-essential', 'libssl-dev', 'libdns-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
-required_packages = ['build-essential', 'libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
+required_packages = ['wget', 'build-essential', 'libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
 
 for package in required_packages:
     install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
