@@ -127,8 +127,9 @@ with open('/etc/named.conf', 'w') as file:
 subprocess.run(['mkdir', '-p', '/var/named/log'])
 subprocess.run(['chown', 'named.named', '-R', '/var/named'])
 
-# ld.so.conf 파일에 라이브러리 경로 추가
-subprocess.run(['sudo', 'echo', '/usr/local/named/lib', '>>', '/etc/ld.so.conf'])
+# 라이브러리 경로를 ld.so.conf 파일에 추가
+with open('/etc/ld.so.conf', "a") as file:
+    file.write('/usr/local/named/lib' + "\n")
 
 # systemd 서비스 파일 작성
 systemd_service_content = """
