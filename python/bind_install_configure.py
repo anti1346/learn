@@ -1,6 +1,7 @@
 import os
 import subprocess
 import distro
+import requests
 
 # BIND 버전
 bind_version = "9.18.26"
@@ -13,7 +14,7 @@ def get_linux_distribution():
 def download_file(url, destination):
     # 파일 다운로드 요청
     response = requests.get(url)
-    
+
     # 응답 확인
     if response.status_code == 200:
         # 파일 저장
