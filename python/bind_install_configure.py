@@ -1,14 +1,31 @@
 import os
 import subprocess
+import distro
 
 # BIND 버전
 bind_version = "9.18.26"
 
-# 우분투인지 확인
-if not os.path.exists('/etc/lsb-release'):
-    print("이 스크립트는 우분투에서만 실행하도록 되어 있습니다.")
+import distro
+
+def get_linux_distribution():
+    # 운영체제 정보 가져오기
+    os_info = distro.id()
+    return os_info
+
+# 운영 체제 판단 및 업데이트
+distro = get_linux_distribution()
+
+if distro == "ubuntu":
+    print(f"이 스크립트는 {distro.capitalize()}만 지원합니다.")
+else:
+    print(f"이 스크립트는 {distro.capitalize()}를 지원하지 않습니다.")
     exit(1)
-        
+
+update_result = subprocess.run(['sudo', 'apt-get', 'update'])
+if update_result.returncode != 0:
+    print(f"APT 업데이트 실패")
+    exit(1)
+
 # 필수 패키지 설치
 required_packages = ['build-essential', 'libssl-dev', 'libdns-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
 
