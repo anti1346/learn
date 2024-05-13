@@ -1,0 +1,118 @@
+import os
+import subprocess
+
+# BIND 버전
+bind_version = "9.18.26"
+
+# 우분투인지 확인
+if not os.path.exists('/etc/lsb-release'):
+    print("이 스크립트는 우분투에서만 실행하도록 되어 있습니다.")
+    exit(1)
+        
+# 필수 패키지 설치
+required_packages = ['build-essential', 'libssl-dev', 'libdns-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
+
+for package in required_packages:
+    install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
+    if install_result.returncode != 0:
+        print(f"필수 패키지 '{package}' 설치 실패")
+        exit(1)
+
+# 사용자 및 그룹 추가
+subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
+
+# 소스코드 다운로드 및 압축 해제
+download_result = subprocess.run(['sudo', 'wget', f'https://ftp.isc.org/isc/bind9/{bind_version}/bind-{bind_version}.tar.xz'])
+if download_result.returncode != 0:
+    print("BIND 패키지 다운로드 실패")
+    exit(1)
+
+extract_result = subprocess.run(['tar', '-xf', f'bind-{bind_version}.tar.xz'])
+if extract_result.returncode != 0:
+    print("압축 해제 실패")
+    exit(1)
+
+# 디렉토리 이동
+change_dir_result = subprocess.run(['cd', f'bind-{bind_version}'])
+if change_dir_result.returncode != 0:
+    print("디렉토리 변경 실패")
+    exit(1)
+
+# 빌드(configure) 및 컴파일
+configure_result = subprocess.run(['./configure', f'--prefix=/usr/local/named', '--sysconfdir=/etc', '--localstatedir=/var', '--with-openssl'])
+if configure_result.returncode != 0:
+    print("빌드(configure) 실패")
+    exit(1)
+
+make_result = subprocess.run(['make', '-j', str(int(subprocess.check_output(['nproc'])) // 2)])
+if make_result.returncode != 0:
+    print("컴파일 실패")
+    exit(1)
+
+# 설치
+install_result = subprocess.run(['sudo', 'make', 'install'])
+if install_result.returncode != 0:
+    print("설치 실패")
+    exit(1)
+
+# symbolic link 생성
+subprocess.run(['ln', '-s', '/usr/local/named/bin/named-checkconf', '/bin/named-checkconf'])
+subprocess.run(['ln', '-s', '/usr/local/named/bin/named-checkzone', '/bin/named-checkzone'])
+subprocess.run(['ln', '-s', '/usr/local/named/sbin/named', '/sbin/named'])
+subprocess.run(['ln', '-s', '/usr/local/named/sbin/named', '/sbin/rndc'])
+
+# named.conf 파일 작성
+named_conf_content = """
+options {
+  directory "/var/named";
+  version "not currently available";
+};
+
+logging {
+  channel example_log {
+    file "log/example.log" versions 3 size 250k;
+    severity info;
+  };
+  category default {
+    example_log;
+  };
+};
+"""
+with open('/etc/named.conf', 'w') as file:
+    file.write(named_conf_content)
+
+# 로그 디렉토리 생성 및 권한 설정
+subprocess.run(['mkdir', '-p', '/var/named/log'])
+subprocess.run(['chown', 'named.named', '-R', '/var/named'])
+
+# ld.so.conf 파일에 라이브러리 경로 추가
+subprocess.run(['sudo', 'echo', '/usr/local/named/lib', '>>', '/etc/ld.so.conf'])
+
+# systemd 서비스 파일 작성
+systemd_service_content = """
+[Unit]
+Description=BIND DNS server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/named/sbin/named -f -c /etc/named.conf
+ExecReload=/usr/local/named/sbin/rndc reload
+ExecStop=/usr/local/named/sbin/rndc stop
+
+[Install]
+WantedBy=multi-user.target
+"""
+with open('/etc/systemd/system/named.service', 'w') as file:
+    file.write(systemd_service_content)
+
+# systemd 데몬 재로드 및 서비스 등록 및 시작
+subprocess.run(['sudo', 'systemctl', 'daemon-reload'])
+subprocess.run(['sudo', 'systemctl', 'enable', 'named'])
+subprocess.run(['sudo', 'systemctl', 'start', 'named'])
+status_result = subprocess.run(['sudo', 'systemctl', 'status', 'named'])
+if status_result.returncode != 0:
+    print("BIND 서비스 상태 확인 실패")
+    exit(1)
+
+print("BIND 설치 및 설정이 성공적으로 완료되었습니다.")
