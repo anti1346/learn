@@ -39,6 +39,12 @@ for package in required_packages:
 # 사용자 및 그룹 추가
 subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
 
+# 디렉토리 이동
+change_dir_result = os.chdir('/usr/local/src')
+if change_dir_result.returncode != 0:
+    print("디렉토리 변경 실패")
+    exit(1)
+
 # 소스코드 다운로드 및 압축 해제
 download_result = subprocess.run(['sudo', 'wget', f'https://ftp.isc.org/isc/bind9/{bind_version}/bind-{bind_version}.tar.xz'])
 if download_result.returncode != 0:
@@ -51,7 +57,7 @@ if extract_result.returncode != 0:
     exit(1)
 
 # 디렉토리 이동
-change_dir_result = subprocess.run(['cd', f'bind-{bind_version}'])
+change_dir_result = os.chdir('bind-{bind_version}')
 if change_dir_result.returncode != 0:
     print("디렉토리 변경 실패")
     exit(1)
