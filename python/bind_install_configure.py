@@ -47,9 +47,11 @@ else:
     subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
     print("named 계정을 추가했습니다.")
 
-# 디렉토리 이동
-change_dir_result = os.chdir('/usr/local/src')
-if change_dir_result.returncode != 0:
+# 디렉토리1 이동
+change_dir1_result = os.chdir('/usr/local/src')
+if change_dir1_result is None:
+    print("디렉토리 변경 성공")
+else:
     print("디렉토리 변경 실패")
     exit(1)
 
@@ -64,10 +66,12 @@ if extract_result.returncode != 0:
     print("압축 해제 실패")
     exit(1)
 
-# 디렉토리 이동
-change_dir_result = os.chdir('bind-{bind_version}')
-if change_dir_result.returncode != 0:
-    print("디렉토리 변경 실패")
+# 디렉토리2 이동
+change_dir2_result = os.chdir('bind-{bind_version}')
+if change_dir2_result is None:
+    print(f"bind-{bind_version} 디렉토리 변경 성공")
+else:
+    print(f"bind-{bind_version} 디렉토리 변경 실패")
     exit(1)
 
 # 빌드(configure) 및 컴파일
