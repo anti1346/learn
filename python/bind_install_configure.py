@@ -36,8 +36,16 @@ for package in required_packages:
         print(f"필수 패키지 '{package}' 설치 실패")
         exit(1)
 
-# 사용자 및 그룹 추가
-subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
+# # 사용자 및 그룹 추가
+# subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
+# named 계정이 있는지 확인
+check_user_command = subprocess.run(['getent', 'passwd', 'named'], capture_output=True, text=True)
+if check_user_command.returncode == 0:
+    print("named 계정이 이미 존재합니다.")
+else:
+    # 사용자 및 그룹 추가
+    subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
+    print("named 계정을 추가했습니다.")
 
 # 디렉토리 이동
 change_dir_result = os.chdir('/usr/local/src')
