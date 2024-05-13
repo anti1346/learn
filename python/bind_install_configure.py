@@ -67,7 +67,7 @@ if extract_result.returncode != 0:
     exit(1)
 
 # 디렉토리2 이동
-change_dir2_result = os.chdir('bind-{bind_version}')
+change_dir2_result = os.chdir(f'bind-{bind_version}')
 if change_dir2_result is None:
     print(f"bind-{bind_version} 디렉토리 변경 성공")
 else:
