@@ -36,7 +36,7 @@ for package in required_packages:
         exit(1)
 
 # BIND 필수 패키지 설치
-required_packages = ['libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev', 'libnghttp2']
+required_packages = ['libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev', 'libnghttp2-dev']
 
 for package in required_packages:
     install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
