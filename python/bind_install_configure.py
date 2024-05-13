@@ -26,14 +26,22 @@ if update_result.returncode != 0:
     print(f"APT 업데이트 실패")
     exit(1)
 
-# 필수 패키지 설치
-#required_packages = ['build-essential', 'libssl-dev', 'libdns-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
-required_packages = ['wget', 'build-essential', 'libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
+# 빌드 필수 패키지 설치
+required_packages = ['wget', 'build-essential', 'pkg-config', 'make']
 
 for package in required_packages:
     install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
     if install_result.returncode != 0:
-        print(f"필수 패키지 '{package}' 설치 실패")
+        print(f"빌드 필수 패키지 '{package}' 설치 실패")
+        exit(1)
+
+# BIND 필수 패키지 설치
+required_packages = ['libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev']
+
+for package in required_packages:
+    install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
+    if install_result.returncode != 0:
+        print(f"BIND 필수 패키지 '{package}' 설치 실패")
         exit(1)
 
 # # 사용자 및 그룹 추가
