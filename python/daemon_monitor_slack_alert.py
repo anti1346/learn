@@ -60,4 +60,4 @@ if __name__ == "__main__":
 
 
 ### 백그라운드 실행
-# nohup python daemon_monitor.py > /dev/null 2>&1 &
+# nohup python daemon_monitor_slack_alert.py > /dev/null 2>&1 &
