@@ -5,8 +5,6 @@ import distro
 # BIND 버전
 bind_version = "9.18.26"
 
-import distro
-
 def get_linux_distribution():
     # 운영체제 정보 가져오기
     os_info = distro.id()
@@ -21,89 +19,89 @@ else:
     print(f"이 스크립트는 {distro.capitalize()}를 지원하지 않습니다.")
     exit(1)
 
-update_result = subprocess.run(['sudo', 'apt-get', 'update'])
-if update_result.returncode != 0:
-    print(f"APT 업데이트 실패")
-    exit(1)
+# update_result = subprocess.run(['sudo', 'apt-get', 'update'])
+# if update_result.returncode != 0:
+#     print(f"APT 업데이트 실패")
+#     exit(1)
 
-# 빌드 필수 패키지 설치
-required_packages = ['wget', 'build-essential', 'pkg-config', 'make']
+# # 빌드 필수 패키지 설치
+# required_packages = ['wget', 'build-essential', 'pkg-config', 'make']
 
-for package in required_packages:
-    install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
-    if install_result.returncode != 0:
-        print(f"빌드 필수 패키지 '{package}' 설치 실패")
-        exit(1)
+# for package in required_packages:
+#     install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
+#     if install_result.returncode != 0:
+#         print(f"빌드 필수 패키지 '{package}' 설치 실패")
+#         exit(1)
 
-# BIND 필수 패키지 설치
-required_packages = ['libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev', 'libnghttp2-dev']
+# # BIND 필수 패키지 설치
+# required_packages = ['libssl-dev', 'libuv1-dev', 'libcap-dev', 'libjemalloc2', 'libjemalloc-dev', 'libnghttp2-dev']
 
-for package in required_packages:
-    install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
-    if install_result.returncode != 0:
-        print(f"BIND 필수 패키지 '{package}' 설치 실패")
-        exit(1)
+# for package in required_packages:
+#     install_result = subprocess.run(['sudo', 'apt-get', 'install', '-y', package])
+#     if install_result.returncode != 0:
+#         print(f"BIND 필수 패키지 '{package}' 설치 실패")
+#         exit(1)
 
-# # 사용자 및 그룹 추가
-# subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
-# named 계정이 있는지 확인
-check_user_command = subprocess.run(['getent', 'passwd', 'named'], capture_output=True, text=True)
-if check_user_command.returncode == 0:
-    print("named 계정이 이미 존재합니다.")
-else:
-    # 사용자 및 그룹 추가
-    subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
-    print("named 계정을 추가했습니다.")
+# # # 사용자 및 그룹 추가
+# # subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
+# # named 계정이 있는지 확인
+# check_user_command = subprocess.run(['getent', 'passwd', 'named'], capture_output=True, text=True)
+# if check_user_command.returncode == 0:
+#     print("named 계정이 이미 존재합니다.")
+# else:
+#     # 사용자 및 그룹 추가
+#     subprocess.run(['sudo', 'adduser', '--system', '--home', '/var/named', '--no-create-home', '--disabled-login', '--disabled-password', '--group', 'named'])
+#     print("named 계정을 추가했습니다.")
 
-# 디렉토리1 이동
-change_dir1_result = os.chdir('/usr/local/src')
-if change_dir1_result is None:
-    print("디렉토리 변경 성공")
-else:
-    print("디렉토리 변경 실패")
-    exit(1)
+# # 디렉토리1 이동
+# change_dir_result = os.chdir('/usr/local/src')
+# if change_dir_result is None:
+#     print("/usr/local/src 디렉토리 변경 성공")
+# else:
+#     print("/usr/local/src 디렉토리 변경 실패")
+#     exit(1)
 
-# 소스코드 다운로드 및 압축 해제
-download_result = subprocess.run(['sudo', 'wget', f'https://ftp.isc.org/isc/bind9/{bind_version}/bind-{bind_version}.tar.xz'])
-if download_result.returncode != 0:
-    print("BIND 패키지 다운로드 실패")
-    exit(1)
+# # 소스코드 다운로드 및 압축 해제
+# download_result = subprocess.run(['sudo', 'wget', f'https://ftp.isc.org/isc/bind9/{bind_version}/bind-{bind_version}.tar.xz'])
+# if download_result.returncode != 0:
+#     print("BIND 패키지 다운로드 실패")
+#     exit(1)
 
-extract_result = subprocess.run(['tar', '-xf', f'bind-{bind_version}.tar.xz'])
-if extract_result.returncode != 0:
-    print("압축 해제 실패")
-    exit(1)
+# extract_result = subprocess.run(['tar', '-xf', f'bind-{bind_version}.tar.xz'])
+# if extract_result.returncode != 0:
+#     print("압축 해제 실패")
+#     exit(1)
 
-# 디렉토리2 이동
-change_dir2_result = os.chdir(f'bind-{bind_version}')
-if change_dir2_result is None:
-    print(f"bind-{bind_version} 디렉토리 변경 성공")
-else:
-    print(f"bind-{bind_version} 디렉토리 변경 실패")
-    exit(1)
+# # 디렉토리2 이동
+# change_dir_result = os.chdir(f'bind-{bind_version}')
+# if change_dir_result is None:
+#     print(f"bind-{bind_version} 디렉토리 변경 성공")
+# else:
+#     print(f"bind-{bind_version} 디렉토리 변경 실패")
+#     exit(1)
 
-# 빌드(configure) 및 컴파일
-configure_result = subprocess.run(['./configure', f'--prefix=/usr/local/named', '--sysconfdir=/etc', '--localstatedir=/var', '--with-openssl'])
-if configure_result.returncode != 0:
-    print("빌드(configure) 실패")
-    exit(1)
+# # 빌드(configure) 및 컴파일
+# configure_result = subprocess.run(['./configure', f'--prefix=/usr/local/named', '--sysconfdir=/etc', '--localstatedir=/var', '--with-openssl'])
+# if configure_result.returncode != 0:
+#     print("빌드(configure) 실패")
+#     exit(1)
 
-make_result = subprocess.run(['make', '-j', str(int(subprocess.check_output(['nproc'])) // 2)])
-if make_result.returncode != 0:
-    print("컴파일 실패")
-    exit(1)
+# make_result = subprocess.run(['make', '-j', str(int(subprocess.check_output(['nproc'])) // 2)])
+# if make_result.returncode != 0:
+#     print("컴파일 실패")
+#     exit(1)
 
-# 설치
-install_result = subprocess.run(['sudo', 'make', 'install'])
-if install_result.returncode != 0:
-    print("설치 실패")
-    exit(1)
+# # 설치
+# install_result = subprocess.run(['sudo', 'make', 'install'])
+# if install_result.returncode != 0:
+#     print("설치 실패")
+#     exit(1)
 
-# symbolic link 생성
-subprocess.run(['ln', '-s', '/usr/local/named/bin/named-checkconf', '/bin/named-checkconf'])
-subprocess.run(['ln', '-s', '/usr/local/named/bin/named-checkzone', '/bin/named-checkzone'])
-subprocess.run(['ln', '-s', '/usr/local/named/sbin/named', '/sbin/named'])
-subprocess.run(['ln', '-s', '/usr/local/named/sbin/named', '/sbin/rndc'])
+# # symbolic link 생성
+# subprocess.run(['ln', '-s', '/usr/local/named/bin/named-checkconf', '/bin/named-checkconf'])
+# subprocess.run(['ln', '-s', '/usr/local/named/bin/named-checkzone', '/bin/named-checkzone'])
+# subprocess.run(['ln', '-s', '/usr/local/named/sbin/named', '/sbin/named'])
+# subprocess.run(['ln', '-s', '/usr/local/named/sbin/named', '/sbin/rndc'])
 
 # named.conf 파일 작성
 named_conf_content = """
