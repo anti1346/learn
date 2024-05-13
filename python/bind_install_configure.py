@@ -131,6 +131,32 @@ subprocess.run(['chown', 'named.named', '-R', '/var/named'])
 with open('/etc/ld.so.conf', "a") as file:
     file.write('/usr/local/named/lib' + "\n")
 
+def download_file(url, destination):
+    # 파일 다운로드 요청
+    response = requests.get(url)
+    
+    # 응답 확인
+    if response.status_code == 200:
+        # 파일 저장
+        with open(destination, 'wb') as f:
+            f.write(response.content)
+        print(f"다운로드 완료: {destination}")
+    else:
+        print(f"파일 다운로드 실패: {response.status_code}")
+
+# 다운로드할 파일과 저장할 경로 정의
+files = {
+    "https://raw.githubusercontent.com/anti1346/codes/main/python/bind/conf/named.conf": "/etc/named.conf",
+    "https://raw.githubusercontent.com/anti1346/codes/main/python/bind/conf/named.rfc1912.zones": "/etc/named.rfc1912.zones",
+    "https://raw.githubusercontent.com/anti1346/codes/main/python/bind/zonefiles/named.ca": "/var/named/named.ca",
+    "https://raw.githubusercontent.com/anti1346/codes/main/python/bind/zonefiles/named.localhost": "/var/named/named.localhost",
+    "https://raw.githubusercontent.com/anti1346/codes/main/python/bind/zonefiles/named.loopback": "/var/named/named.loopback"
+}
+
+# 파일 다운로드
+for url, destination in files.items():
+    download_file(url, destination)
+
 # systemd 서비스 파일 작성
 systemd_service_content = """
 [Unit]
@@ -153,6 +179,7 @@ with open('/etc/systemd/system/named.service', 'w') as file:
 subprocess.run(['sudo', 'systemctl', 'daemon-reload'])
 subprocess.run(['sudo', 'systemctl', 'enable', 'named'])
 subprocess.run(['sudo', 'systemctl', 'start', 'named'])
+
 status_result = subprocess.run(['sudo', 'systemctl', 'status', 'named'])
 if status_result.returncode != 0:
     print("BIND 서비스 상태 확인 실패")
