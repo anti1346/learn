@@ -137,9 +137,9 @@ logging {
 with open('/etc/named.conf', 'w') as file:
     file.write(named_conf_content)
 
-# 로그 디렉토리 생성 및 권한 설정
+# data, log 디렉토리 생성
+subprocess.run(['mkdir', '-p', '/var/named/data'])
 subprocess.run(['mkdir', '-p', '/var/named/log'])
-subprocess.run(['chown', 'named.named', '-R', '/var/named'])
 
 # 라이브러리 경로를 ld.so.conf 파일에 추가
 with open('/etc/ld.so.conf', "a") as file:
@@ -157,6 +157,9 @@ files = {
 # 파일 다운로드
 for url, destination in files.items():
     download_file(url, destination)
+
+# data, log 디렉토리 권한 설정
+subprocess.run(['chown', 'named.named', '-R', '/var/named'])
 
 # systemd 서비스 파일 작성
 systemd_service_content = """
