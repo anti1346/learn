@@ -167,16 +167,13 @@ for url, destination in files.items():
     download_file(url, destination)
 
 # 디렉토리 소유자 변경 함수
-def change_owner(directory, user, group):
-    try:
-        os.chown(directory, user, group)
-        print(f"{directory}의 소유자를 {user}.{group}으로 변경 완료")
-    except OSError as e:
-        print(f"{directory}의 소유자 변경 실패: {e}")
-        exit(1)
-
 # /var/named 디렉토리의 소유자 변경
-change_owner('/var/named', 'named', 'named')
+try:
+    subprocess.run(['sudo', 'chown', '-R', 'named.named', '/var/named'], check=True)
+    print("/var/named의 소유자를 변경했습니다.")
+except subprocess.CalledProcessError as e:
+    print(f"소유자 변경 실패: {e}")
+    exit(1)
 
 # systemd 서비스 파일 작성
 systemd_service_content = """
