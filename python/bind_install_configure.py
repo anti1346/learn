@@ -168,6 +168,7 @@ for url, destination in files.items():
 
 # 디렉토리 소유자 변경 함수
 # /var/named 디렉토리의 소유자 변경
+check_user_command = subprocess.run(['sudo', 'chown', '-R', 'named.named', '/var/named'], check=True)
 try:
     subprocess.run(['sudo', 'chown', '-R', 'named.named', '/var/named'], check=True)
     print("/var/named의 소유자를 변경했습니다.")
