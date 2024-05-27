@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  ubuntu-systemd:
+    image: anti1346/ubuntu-systemd:latest
+    container_name: ubuntu-systemd
+    hostname: ubuntu-systemd
+    restart: always
+    privileged: true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2222:22"
+      - "3306:3306"
+      - "9200:9200"
+
